@@ -56,4 +56,30 @@ public class UserController {
             return ResponseEntity.internalServerError().body(response);
         }
     }
+
+    @GetMapping("/public/searchUsersByKeyword")
+    public ResponseEntity<ResponseObj> searchUsersByKeyword(@RequestParam Integer pageNumber, @RequestParam Integer pageSize, @RequestParam String searchKeyWord){
+        ResponseObj response = null;
+
+        try{
+            Pageable pageable = PageRequest.of(pageNumber, pageSize);
+            PaginationDTO<List<UserDetailsProj>> userList = this.userServiceImpl.searchUsersByKeyword(pageable, searchKeyWord);
+
+            if(userList!=null && userList.getData()!=null){
+                response = ResponseObj.builder().status(1).message("Data fetched successfully.").data(userList).build();
+            }
+            else{
+                response = ResponseObj.builder().status(1).message("No data found!").data(userList).build();
+            }
+            return ResponseEntity.ok(response);
+        }
+        catch (Exception e){
+            ErrorObj errorObj = ErrorObj.builder().errorCode("B_S_1").errorMessage("Exception occurred in fetching data!").build();
+            List<ErrorObj> errorList = new ArrayList<>();
+            errorList.add(errorObj);
+
+            response = ResponseObj.builder().status(0).message("Oops! Something went wrong!").data(null).errorList(errorList).build();
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
 }
