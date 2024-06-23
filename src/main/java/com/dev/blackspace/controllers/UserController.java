@@ -82,4 +82,30 @@ public class UserController {
             return ResponseEntity.internalServerError().body(response);
         }
     }
+
+
+    @GetMapping("/public/getUserByUserName")
+    public ResponseEntity<ResponseObj> getUserByUserName(@RequestParam String userName){
+        ResponseObj response = null;
+
+        try{
+            UserDetailsProj userData = this.userServiceImpl.getUserByUserName(userName);
+
+            if(userData!=null){
+                response = ResponseObj.builder().status(1).message("Data fetched successfully.").data(userData).build();
+            }
+            else{
+                response = ResponseObj.builder().status(1).message("No data found!").data(null).build();
+            }
+            return ResponseEntity.ok(response);
+        }
+        catch (Exception e){
+            ErrorObj errorObj = ErrorObj.builder().errorCode("B_S_1").errorMessage("Exception occurred in fetching data!").build();
+            List<ErrorObj> errorList = new ArrayList<>();
+            errorList.add(errorObj);
+
+            response = ResponseObj.builder().status(0).message("Oops! Something went wrong!").data(null).errorList(errorList).build();
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
 }

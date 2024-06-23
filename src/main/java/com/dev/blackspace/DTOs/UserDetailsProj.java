@@ -60,4 +60,8 @@ public interface UserDetailsProj {
     String getRoleName();
 
     Integer getExperience();
+
+    String getPhoneNumber();
+
+    String getCallingCode();
 }
