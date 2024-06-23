@@ -34,6 +34,9 @@ public class UserProfileEntity {
     @Column(name = "phone_number", length = 15)
     private String phoneNumber;
 
+    @Column(name = "calling_code", length = 5)
+    private String callingCode;
+
     @Column(name = "date_of_birth")
     private Date dateOfBirth;
 

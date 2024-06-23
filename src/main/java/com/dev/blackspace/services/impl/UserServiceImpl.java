@@ -5,6 +5,7 @@ import com.dev.blackspace.DTOs.UserDetailsProj;
 import com.dev.blackspace.entities.UserProfileEntity;
 import com.dev.blackspace.repositories.UserProfileRepo;
 import com.dev.blackspace.utils.StringUtil;
+import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -54,5 +55,17 @@ public class UserServiceImpl {
         return PaginationDTO.<List<UserDetailsProj>>builder().pageSize(0)
                 .totalPages(0).totalElements(0L).data(Collections.emptyList()).build();
 
+    }
+
+    public UserDetailsProj getUserByUserName(String userName) {
+        if(userName==null || StringUtils.isBlank(userName)){
+            return null;
+        }
+
+        UserDetailsProj userData = this.userRepo.findUserDetailsByUserName(userName);
+        if (userData != null) {
+            return userData;
+        }
+        return null;
     }
 }
