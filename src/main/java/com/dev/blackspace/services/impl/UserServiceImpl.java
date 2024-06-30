@@ -2,7 +2,9 @@ package com.dev.blackspace.services.impl;
 
 import com.dev.blackspace.DTOs.PaginationDTO;
 import com.dev.blackspace.DTOs.UserDetailsProj;
+import com.dev.blackspace.entities.UserExperienceEntity;
 import com.dev.blackspace.entities.UserProfileEntity;
+import com.dev.blackspace.repositories.UserExperienceRepo;
 import com.dev.blackspace.repositories.UserProfileRepo;
 import com.dev.blackspace.utils.StringUtil;
 import io.micrometer.common.util.StringUtils;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +30,9 @@ public class UserServiceImpl {
 
     @Autowired
     private UserProfileRepo userRepo;
+
+    @Autowired
+    private UserExperienceRepo userExpRepo;
 
     @Autowired
     private StringUtil stringUtil;
@@ -44,9 +50,7 @@ public class UserServiceImpl {
     }
 
     public PaginationDTO<List<UserDetailsProj>> searchUsersByKeyword(Pageable pageable, String searchKeyWord) {
-        String searchRegex = Arrays.stream(searchKeyWord.split("[,\\s]+")) // Split by comma or whitespace
-                .map(keyword -> "(?i)" + this.stringUtil.escapeAndLowercase(keyword.trim()))
-                .collect(Collectors.joining("|"));
+        String searchRegex = this.stringUtil.getSearchRegex(searchKeyWord);
         Page<UserDetailsProj> pageData = this.userRepo.findUserDetailsBySearchKeyWord(pageable, searchRegex);
         if (pageData != null) {
             return PaginationDTO.<List<UserDetailsProj>>builder().pageSize(pageData.getSize())
@@ -58,7 +62,7 @@ public class UserServiceImpl {
     }
 
     public UserDetailsProj getUserByUserName(String userName) {
-        if(userName==null || StringUtils.isBlank(userName)){
+        if (userName == null || StringUtils.isBlank(userName)) {
             return null;
         }
 
@@ -67,5 +71,17 @@ public class UserServiceImpl {
             return userData;
         }
         return null;
+    }
+
+    public List<UserExperienceEntity> getUserExperienceByUserId(Integer userId) {
+        if (userId == null) {
+            return Collections.emptyList();
+        }
+
+        Optional<List<UserExperienceEntity>> userExpDataOptional = this.userExpRepo.findByUserIdOrderByFromDateDesc(userId);
+        if (userExpDataOptional != null && userExpDataOptional.isPresent()) {
+            return userExpDataOptional.get();
+        }
+        return Collections.emptyList();
     }
 }

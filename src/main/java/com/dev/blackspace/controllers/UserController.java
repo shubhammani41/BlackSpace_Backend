@@ -4,6 +4,7 @@ import com.dev.blackspace.DTOs.ErrorObj;
 import com.dev.blackspace.DTOs.PaginationDTO;
 import com.dev.blackspace.DTOs.ResponseObj;
 import com.dev.blackspace.DTOs.UserDetailsProj;
+import com.dev.blackspace.entities.UserExperienceEntity;
 import com.dev.blackspace.entities.UserProfileEntity;
 import com.dev.blackspace.repositories.UserProfileRepo;
 import com.dev.blackspace.services.impl.UserServiceImpl;
@@ -93,6 +94,31 @@ public class UserController {
 
             if(userData!=null){
                 response = ResponseObj.builder().status(1).message("Data fetched successfully.").data(userData).build();
+            }
+            else{
+                response = ResponseObj.builder().status(1).message("No data found!").data(null).build();
+            }
+            return ResponseEntity.ok(response);
+        }
+        catch (Exception e){
+            ErrorObj errorObj = ErrorObj.builder().errorCode("B_S_1").errorMessage("Exception occurred in fetching data!").build();
+            List<ErrorObj> errorList = new ArrayList<>();
+            errorList.add(errorObj);
+
+            response = ResponseObj.builder().status(0).message("Oops! Something went wrong!").data(null).errorList(errorList).build();
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+    @GetMapping("/public/getUserExperienceByUserId")
+    public ResponseEntity<ResponseObj> getUserExperienceByUserId(@RequestParam Integer userId){
+        ResponseObj response = null;
+
+        try{
+            List<UserExperienceEntity> userExpData = this.userServiceImpl.getUserExperienceByUserId(userId);
+
+            if(userExpData!=null && !userExpData.isEmpty()){
+                response = ResponseObj.builder().status(1).message("Data fetched successfully.").data(userExpData).build();
             }
             else{
                 response = ResponseObj.builder().status(1).message("No data found!").data(null).build();

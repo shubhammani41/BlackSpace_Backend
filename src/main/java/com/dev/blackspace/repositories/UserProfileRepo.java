@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 public interface UserProfileRepo extends JpaRepository<UserProfileEntity, Long> {
 
     String USER_DETAIL_QUERY = "select up.user_id as userId, up.first_name as firstName, up.last_name as lastName, up.email as email, up.phone_number as phoneNumber, up.calling_code as callingCode, up.experience as experience, up.date_of_birth as dateOfBirth, up.profile_picture_url as profilePictureUrl,\n" +
-            "up.gender as gender, up.bio as bio, up.github_url as githubUrl, up.linkedin_url as linkedUrl, up.twitter_url as twitterUrl, up.website_url as websiteUrl,\n" +
+            "up.gender as gender, up.bio as bio, up.website_url as websiteUrl,\n" +
             "up.user_name as userName, json_arrayagg(json_object(\"skill_id\",sk.skill_id, \"skill_name\",sk.skill_name)) as skills, \n" +
             "cnt.country_name as countryName, cnt.country_id as countryId, sts.state_name as StateName, sts.state_id as stateId,\n" +
             "cts.city_name as cityName, cts.city_id as cityId, post.position_name as positionName, post.position_id as positionId,\n" +
