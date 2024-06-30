@@ -50,18 +50,6 @@ public class UserProfileEntity {
     @Column(name = "bio", length = 500)
     private String bio;
 
-    @Column(name = "github_url", length = 255)
-    private String githubUrl;
-
-    @Column(name = "linkedin_url", length = 255)
-    private String linkedinUrl;
-
-    @Column(name = "facebook_url", length = 255)
-    private String facebookUrl;
-
-    @Column(name = "twitter_url", length = 255)
-    private String twitterUrl;
-
     @Column(name = "website_url", length = 255)
     private String websiteUrl;
 

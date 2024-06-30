@@ -19,12 +19,6 @@ public interface UserDetailsProj {
 
     String getBio();
 
-    String getGithubUrl();
-
-    String getLinkedinUrl();
-
-    String getTwitterUrl();
-
     String getWebsiteUrl();
 
     String getUserName();
