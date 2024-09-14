@@ -29,7 +29,7 @@ public class CustomUserDetails implements org.springframework.security.core.user
 
     @Override
     public String getPassword() {
-        return user.getPasswordHash();
+        return null;
     }
 
     @Override

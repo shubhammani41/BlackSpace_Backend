@@ -25,18 +25,6 @@ public class UserProfileEntity {
     @Column(name = "last_name", nullable = false, length = 50)
     private String lastName;
 
-    @Column(name = "email", nullable = false, length = 100, unique = true)
-    private String email;
-
-    @Column(name = "password_hash", nullable = false, length = 255)
-    private String passwordHash;
-
-    @Column(name = "phone_number", length = 15)
-    private String phoneNumber;
-
-    @Column(name = "calling_code", length = 5)
-    private String callingCode;
-
     @Column(name = "date_of_birth")
     private Date dateOfBirth;
 
