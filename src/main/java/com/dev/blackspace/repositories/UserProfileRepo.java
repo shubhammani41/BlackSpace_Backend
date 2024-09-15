@@ -31,6 +31,8 @@ public interface UserProfileRepo extends JpaRepository<UserProfileEntity, Long> 
 
     UserProfileEntity findByUserName(String userName);
 
+    UserProfileEntity findByUserId(Long userId);
+
     @Query(value = USER_DETAIL_QUERY +
             "group by up.user_id ", nativeQuery = true)
     Page<UserDetailsProj> findUserDetailsByRandomAndPage(Pageable pageable);

@@ -1,9 +1,6 @@
 package com.dev.blackspace.controllers;
 
-import com.dev.blackspace.DTOs.ErrorObj;
-import com.dev.blackspace.DTOs.PaginationDTO;
-import com.dev.blackspace.DTOs.ResponseObj;
-import com.dev.blackspace.DTOs.UserDetailsProj;
+import com.dev.blackspace.DTOs.*;
 import com.dev.blackspace.entities.UserExperienceEntity;
 import com.dev.blackspace.entities.UserProfileEntity;
 import com.dev.blackspace.repositories.UserProfileRepo;
@@ -12,9 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -122,6 +117,31 @@ public class UserController {
             }
             else{
                 response = ResponseObj.builder().status(1).message("No data found!").data(null).build();
+            }
+            return ResponseEntity.ok(response);
+        }
+        catch (Exception e){
+            ErrorObj errorObj = ErrorObj.builder().errorCode("B_S_1").errorMessage("Exception occurred in fetching data!").build();
+            List<ErrorObj> errorList = new ArrayList<>();
+            errorList.add(errorObj);
+
+            response = ResponseObj.builder().status(0).message("Oops! Something went wrong!").data(null).errorList(errorList).build();
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+    @PostMapping("/public/login")
+    public ResponseEntity<ResponseObj> getUserExperienceByUserId(@RequestBody UserLoginReqDTO userLoginReqDTO){
+        ResponseObj response = null;
+
+        try{
+            UserLoginResDTO userLoginResDTO = this.userServiceImpl.getUserLoginDetailsFromUserJsonUrl(userLoginReqDTO.getUserJsonUrl(), userLoginReqDTO.getAuthType());
+
+            if(userLoginResDTO!=null && userLoginResDTO.getToken()!=null){
+                response = ResponseObj.builder().status(1).message("Logged in successfully.").data(userLoginResDTO).build();
+            }
+            else{
+                response = ResponseObj.builder().status(1).message("Authentication failed").data(null).build();
             }
             return ResponseEntity.ok(response);
         }

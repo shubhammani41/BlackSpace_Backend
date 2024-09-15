@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Ignore specific properties file in resources
+src/main/resources/application-prod.properties
+src/main/resources/application-dev.properties
