@@ -5,6 +5,8 @@ import java.util.Date;
 public interface UserDetailsProj {
     Long getUserId();
 
+    Long getUserProfileId();
+
     String getFirstName();
 
     String getLastName();
@@ -18,12 +20,6 @@ public interface UserDetailsProj {
     String getGender();
 
     String getBio();
-
-    String getGithubUrl();
-
-    String getLinkedinUrl();
-
-    String getTwitterUrl();
 
     String getWebsiteUrl();
 
@@ -60,4 +56,8 @@ public interface UserDetailsProj {
     String getRoleName();
 
     Integer getExperience();
+
+    String getPhoneNumber();
+
+    String getPhoneCountryCode();
 }

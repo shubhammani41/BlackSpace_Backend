@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Ignore specific properties file in resources
+src/main/resources/application-prod.properties
+src/main/resources/application-dev.properties
+src/main/resources/ZVlrKlr-EkuB-DXXoLTJcw-main-bbbc6b2c7c0db8ea9432d7380a69cd0eef8e47b6-temp.pfx

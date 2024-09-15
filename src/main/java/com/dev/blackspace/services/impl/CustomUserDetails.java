@@ -1,6 +1,8 @@
 package com.dev.blackspace.services.impl;
 
+import com.dev.blackspace.entities.UserLoginEntity;
 import com.dev.blackspace.entities.UserProfileEntity;
+import com.dev.blackspace.repositories.UserProfileRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -10,36 +12,48 @@ import java.util.Collection;
 import java.util.Collections;
 
 public class CustomUserDetails implements org.springframework.security.core.userdetails.UserDetails {
-    private UserProfileEntity user;
-
+    private UserLoginEntity user;
+    private UserProfileEntity userProfile;
+    @Autowired
+    private UserProfileRepo userProfileRepo;
     @Autowired
     private RoleServiceImpl roleService;
 
-    public CustomUserDetails(UserProfileEntity user) {
+    public CustomUserDetails(UserLoginEntity user) {
         this.user = user;
+        this.userProfile = this.userProfileRepo.findByUserId(user.getUserProfileId());
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Integer roleId = user.getRoleId();
-        String role = roleService.getAuthorityNameById(roleId);
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
-        return Collections.singletonList(authority);
+            if(userProfile!=null){
+                Integer roleId = this.userProfileRepo.findByUserId(user.getUserProfileId()).getRoleId();
+                String role = roleService.getAuthorityNameById(roleId);
+                SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
+                return Collections.singletonList(authority);
+            }
+            return Collections.emptyList();
     }
 
     @Override
     public String getPassword() {
-        return user.getPasswordHash();
+        return null;
     }
 
     @Override
     public String getUsername() {
-        return user.getUserName();
+        if(userProfile!=null){
+           return userProfile.getUserName();
+        }
+        return null;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        if(userProfile!=null){
+            return userProfile.getIsActive();
+        }
+        return false;
     }
 
     @Override

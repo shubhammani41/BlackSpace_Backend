@@ -25,15 +25,6 @@ public class UserProfileEntity {
     @Column(name = "last_name", nullable = false, length = 50)
     private String lastName;
 
-    @Column(name = "email", nullable = false, length = 100, unique = true)
-    private String email;
-
-    @Column(name = "password_hash", nullable = false, length = 255)
-    private String passwordHash;
-
-    @Column(name = "phone_number", length = 15)
-    private String phoneNumber;
-
     @Column(name = "date_of_birth")
     private Date dateOfBirth;
 
@@ -46,18 +37,6 @@ public class UserProfileEntity {
 
     @Column(name = "bio", length = 500)
     private String bio;
-
-    @Column(name = "github_url", length = 255)
-    private String githubUrl;
-
-    @Column(name = "linkedin_url", length = 255)
-    private String linkedinUrl;
-
-    @Column(name = "facebook_url", length = 255)
-    private String facebookUrl;
-
-    @Column(name = "twitter_url", length = 255)
-    private String twitterUrl;
 
     @Column(name = "website_url", length = 255)
     private String websiteUrl;
