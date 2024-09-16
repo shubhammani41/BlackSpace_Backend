@@ -16,10 +16,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public CustomUserDetails loadUserByUsername(String phoneOrEmail) throws IllegalArgumentException {
-        UserLoginEntity user = userLoginRepo.findByPhoneNumber(phoneOrEmail);
-        if(user==null){
-            user = userLoginRepo.findByEmail(phoneOrEmail);
-        }
+        UserLoginEntity user = userLoginRepo.findByPhoneOrEmail(phoneOrEmail);
         if (user == null) {
             throw new UsernameNotFoundException("User not found");
         }

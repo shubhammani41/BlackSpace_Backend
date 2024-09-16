@@ -32,6 +32,9 @@ public class UserExperienceEntity {
     @Column(name = "organization_id", insertable=false, updatable=false)
     private Long organizationId;
 
+    @Column(name = "organization_name")
+    private String organizationName;
+
     @ManyToOne
     @JoinColumn(name = "organization_id", referencedColumnName = "organization_id")
     private OrganizationEntity organizationDetails;

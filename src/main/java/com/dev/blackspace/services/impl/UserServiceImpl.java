@@ -2,7 +2,10 @@ package com.dev.blackspace.services.impl;
 
 import com.dev.blackspace.DTOs.*;
 import com.dev.blackspace.entities.UserExperienceEntity;
+import com.dev.blackspace.entities.UserLoginEntity;
+import com.dev.blackspace.entities.UserProfileEntity;
 import com.dev.blackspace.repositories.UserExperienceRepo;
+import com.dev.blackspace.repositories.UserLoginRepo;
 import com.dev.blackspace.repositories.UserProfileRepo;
 import com.dev.blackspace.utils.JWTUtil;
 import com.dev.blackspace.utils.StringUtil;
@@ -18,11 +21,15 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @Slf4j
 public class UserServiceImpl {
+
+    @Autowired
+    private UserLoginRepo userLoginRepo;
 
     @Autowired
     private UserProfileRepo userRepo;
@@ -97,7 +104,10 @@ public class UserServiceImpl {
             if(authType.equals(0)){
                 try{
                     PhoneAuthResponse phoneAuthResponse = objectMapper.readValue(userOTPData, PhoneAuthResponse.class);
+                    UserLoginResDetailsDTO userLoginResDetailsDTO = this.findUserLoginByPhoneAndInsert(phoneAuthResponse.getUserPhoneNumber(), phoneAuthResponse.getUserCountryCode());
+
                     userLoginResDTO.setToken(jwtUtil.generateToken(phoneAuthResponse.getUserPhoneNumber()));
+                    userLoginResDTO.setUserDetails(userLoginResDetailsDTO);
                 }
                 catch (Exception e){
                     userLoginResDTO.setToken(null);
@@ -107,7 +117,10 @@ public class UserServiceImpl {
             } else if (authType.equals(1)) {
                 try{
                     EmailAuthResponse emailAuthResponse = objectMapper.readValue(userOTPData, EmailAuthResponse.class);
+                    UserLoginResDetailsDTO userLoginResDetailsDTO = this.findUserLoginByEmailAndInsert(emailAuthResponse.getUserEmailId());
+
                     userLoginResDTO.setToken(jwtUtil.generateToken(emailAuthResponse.getUserEmailId()));
+                    userLoginResDTO.setUserDetails(userLoginResDetailsDTO);
                 }
                 catch (Exception e){
                     userLoginResDTO.setToken(null);
@@ -122,5 +135,33 @@ public class UserServiceImpl {
             userLoginResDTO.setToken(null);
         }
         return userLoginResDTO;
+    }
+
+    public UserLoginResDetailsDTO findUserLoginByPhoneAndInsert(String phoneNumber, String countryCode){
+        UserLoginEntity userLoginEntity = this.userLoginRepo.findByPhoneOrEmail(phoneNumber);
+        if(Objects.isNull(userLoginEntity)){
+            userLoginEntity = new UserLoginEntity();
+            userLoginEntity.setPhoneNumber(phoneNumber);
+            userLoginEntity.setPhoneCountryCode(countryCode);
+            userLoginRepo.save(userLoginEntity);
+        }
+        UserLoginResDetailsDTO userLoginResDetailsDTO = UserLoginResDetailsDTO.builder().userId(userLoginEntity.getUserId()).userEmail(userLoginEntity.getEmail())
+                .userPhoneNumber(userLoginEntity.getPhoneNumber()).userProfileId(userLoginEntity.getUserProfileId())
+                .phoneCountryCode(userLoginEntity.getPhoneCountryCode()).build();
+        return userLoginResDetailsDTO;
+    }
+
+    public UserLoginResDetailsDTO findUserLoginByEmailAndInsert(String email){
+        UserLoginEntity userLoginEntity = this.userLoginRepo.findByPhoneOrEmail(email);
+        if(Objects.isNull(userLoginEntity)){
+            userLoginEntity = new UserLoginEntity();
+            userLoginEntity.setEmail(email);
+            userLoginRepo.save(userLoginEntity);
+        }
+        UserLoginResDetailsDTO userLoginResDetailsDTO = UserLoginResDetailsDTO.builder().userId(userLoginEntity.getUserId()).userEmail(userLoginEntity.getEmail())
+                .userPhoneNumber(userLoginEntity.getPhoneNumber()).userProfileId(userLoginEntity.getUserProfileId())
+                .phoneCountryCode(userLoginEntity.getPhoneCountryCode()).build();
+
+        return userLoginResDetailsDTO;
     }
 }
