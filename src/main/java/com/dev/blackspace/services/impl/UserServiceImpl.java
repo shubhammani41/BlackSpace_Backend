@@ -19,10 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -143,6 +140,7 @@ public class UserServiceImpl {
             userLoginEntity = new UserLoginEntity();
             userLoginEntity.setPhoneNumber(phoneNumber);
             userLoginEntity.setPhoneCountryCode(countryCode);
+            userLoginEntity.setCreatedAt(new Date());
             userLoginRepo.save(userLoginEntity);
         }
         UserLoginResDetailsDTO userLoginResDetailsDTO = UserLoginResDetailsDTO.builder().userId(userLoginEntity.getUserId()).userEmail(userLoginEntity.getEmail())
@@ -156,6 +154,7 @@ public class UserServiceImpl {
         if(Objects.isNull(userLoginEntity)){
             userLoginEntity = new UserLoginEntity();
             userLoginEntity.setEmail(email);
+            userLoginEntity.setCreatedAt(new Date());
             userLoginRepo.save(userLoginEntity);
         }
         UserLoginResDetailsDTO userLoginResDetailsDTO = UserLoginResDetailsDTO.builder().userId(userLoginEntity.getUserId()).userEmail(userLoginEntity.getEmail())

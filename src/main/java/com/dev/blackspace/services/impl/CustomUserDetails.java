@@ -51,7 +51,7 @@ public class CustomUserDetails implements org.springframework.security.core.user
     @Override
     public boolean isAccountNonExpired() {
         if(userProfile!=null){
-            return userProfile.getIsActive();
+            return !userProfile.getIsDeactivated();
         }
         return false;
     }

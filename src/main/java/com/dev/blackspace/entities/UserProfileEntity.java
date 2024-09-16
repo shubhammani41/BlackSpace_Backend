@@ -50,9 +50,6 @@ public class UserProfileEntity {
     @Column(name = "user_name", nullable = false, length = 30, unique = true)
     private String userName;
 
-    @Column(name = "is_active", nullable = false)
-    private Boolean isActive;
-
     @Column(name = "country_id")
     private Integer countryId;
 

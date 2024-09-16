@@ -27,7 +27,7 @@ public interface UserProfileRepo extends JpaRepository<UserProfileEntity, Long> 
             "join industries inds on inds.industry_id = post.industry_id\n" +
             "join organizations orgs on orgs.organization_id = up.organization_id\n" +
             "join role role on role.role_id = up.role_id\n" +
-            "where up.is_active = 1\n";
+            "where up.is_deactivated = 0\n";
 
     UserProfileEntity findByUserName(String userName);
 

@@ -3,6 +3,8 @@ package com.dev.blackspace.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -27,4 +29,16 @@ public class UserLoginEntity {
 
     @Column(name = "email", unique = true)
     private String email;
+
+    @Column(name = "created_at")
+    private Date createdAt;
+
+    @Column(name = "updated_at")
+    private Date updatedAt;
+
+    @Column(name = "is_deactive")
+    private Boolean isDeactive = false;
+
+    @Column(name = "deactivated_at")
+    private Date deactivatedAt;
 }
