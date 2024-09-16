@@ -101,35 +101,29 @@ public class UserServiceImpl {
             if(authType.equals(0)){
                 try{
                     PhoneAuthResponse phoneAuthResponse = objectMapper.readValue(userOTPData, PhoneAuthResponse.class);
-                    UserLoginResDetailsDTO userLoginResDetailsDTO = this.findUserLoginByPhoneAndInsert(phoneAuthResponse.getUserPhoneNumber(), phoneAuthResponse.getUserCountryCode());
-
-                    userLoginResDTO.setToken(jwtUtil.generateToken(phoneAuthResponse.getUserPhoneNumber()));
-                    userLoginResDTO.setUserDetails(userLoginResDetailsDTO);
+                    if(phoneAuthResponse!=null && phoneAuthResponse.getUserPhoneNumber()!=null && !phoneAuthResponse.getUserPhoneNumber().isBlank()){
+                        UserLoginResDetailsDTO userLoginResDetailsDTO = this.findUserLoginByPhoneAndInsert(phoneAuthResponse.getUserPhoneNumber(), phoneAuthResponse.getUserCountryCode());
+                        userLoginResDTO.setToken(jwtUtil.generateToken(phoneAuthResponse.getUserPhoneNumber()));
+                        userLoginResDTO.setUserDetails(userLoginResDetailsDTO);
+                    }
                 }
                 catch (Exception e){
-                    userLoginResDTO.setToken(null);
                     log.error("Inside catch block of getUserLoginDetailsFromUserJsonUrl():::Error generating phone token:::{}",e);
                 }
 
             } else if (authType.equals(1)) {
                 try{
                     EmailAuthResponse emailAuthResponse = objectMapper.readValue(userOTPData, EmailAuthResponse.class);
-                    UserLoginResDetailsDTO userLoginResDetailsDTO = this.findUserLoginByEmailAndInsert(emailAuthResponse.getUserEmailId());
-
-                    userLoginResDTO.setToken(jwtUtil.generateToken(emailAuthResponse.getUserEmailId()));
-                    userLoginResDTO.setUserDetails(userLoginResDetailsDTO);
+                    if(emailAuthResponse!=null && emailAuthResponse.getUserEmailId()!=null && !emailAuthResponse.getUserEmailId().isBlank()){
+                        UserLoginResDetailsDTO userLoginResDetailsDTO = this.findUserLoginByEmailAndInsert(emailAuthResponse.getUserEmailId());
+                        userLoginResDTO.setToken(jwtUtil.generateToken(emailAuthResponse.getUserEmailId()));
+                        userLoginResDTO.setUserDetails(userLoginResDetailsDTO);
+                    }
                 }
                 catch (Exception e){
-                    userLoginResDTO.setToken(null);
                     log.error("Inside catch block of getUserLoginDetailsFromUserJsonUrl():::Error generating email token:::{}",e);
                 }
             }
-            else{
-                userLoginResDTO.setToken(null);
-            }
-        }
-        else{
-            userLoginResDTO.setToken(null);
         }
         return userLoginResDTO;
     }
