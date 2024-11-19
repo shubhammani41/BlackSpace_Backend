@@ -19,7 +19,11 @@ public interface UserProfileRepo extends JpaRepository<UserProfileEntity, Long> 
             "role.role_name as roleName, role.role_id as roleId\n" +
             "from user_login ul \n" +
             "join user_profile as up on ul.user_profile_id = up.user_id\n"+
-            "join skills sk on FIND_IN_SET(sk.skill_id, up.skill_ids)\n" +
+            "LEFT JOIN (\n" +
+            "    SELECT sk.skill_id, sk.skill_name, up_skill.user_id\n" +
+            "    FROM skills sk\n" +
+            "    JOIN user_profile up_skill ON FIND_IN_SET(sk.skill_id, up_skill.skill_ids)\n" +
+            ") sk ON sk.user_id = up.user_id\n" +
             "join countries cnt on cnt.country_id = up.country_id\n" +
             "join states sts on sts.state_id = up.state_id\n" +
             "join cities cts on cts.city_id = up.city_id\n" +
@@ -38,14 +42,18 @@ public interface UserProfileRepo extends JpaRepository<UserProfileEntity, Long> 
     Page<UserDetailsProj> findUserDetailsByRandomAndPage(Pageable pageable);
 
     @Query(value = USER_DETAIL_QUERY +
-            "AND (" +
-            "LOWER(up.first_name) REGEXP :searchRegex " +
-            "OR LOWER(up.last_name) REGEXP :searchRegex " +
-            "OR LOWER(post.position_name) REGEXP :searchRegex " +
-            "OR LOWER(sk.skill_name) REGEXP :searchRegex " +
-            "OR LOWER(cnt.country_name) REGEXP :searchRegex " +
-            "OR LOWER(cts.city_name) REGEXP :searchRegex " +
-            "OR LOWER(sts.state_name) REGEXP :searchRegex " +
+            "AND ( " +
+            "    LOWER(up.first_name) REGEXP :searchRegex OR " +
+            "    LOWER(up.last_name) REGEXP :searchRegex OR " +
+            "    LOWER(post.position_name) REGEXP :searchRegex OR " +
+            "    LOWER(cnt.country_name) REGEXP :searchRegex OR " +
+            "    LOWER(cts.city_name) REGEXP :searchRegex OR " +
+            "    LOWER(sts.state_name) REGEXP :searchRegex OR " +
+            "    EXISTS ( " +
+            "        SELECT 1 FROM skills sk_inner " +
+            "        WHERE FIND_IN_SET(sk_inner.skill_id, up.skill_ids) " +
+            "        AND LOWER(sk_inner.skill_name) REGEXP :searchRegex " +
+            "    ) " +
             ") " +
             "GROUP BY up.user_id ",
             nativeQuery = true)
