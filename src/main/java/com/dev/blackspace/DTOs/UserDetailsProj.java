@@ -27,6 +27,8 @@ public interface UserDetailsProj {
 
     String getSkills(); // JSON string of skills
 
+    String getUserExperience(); // JSON string of skills
+
     String getCountryName();
 
     String getStateName();
