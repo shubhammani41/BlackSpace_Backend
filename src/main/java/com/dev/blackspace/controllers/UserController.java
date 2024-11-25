@@ -131,11 +131,11 @@ public class UserController {
     }
 
     @PostMapping("/public/login")
-    public ResponseEntity<ResponseObj> getUserExperienceByUserId(@RequestBody UserLoginReqDTO userLoginReqDTO){
+    public ResponseEntity<ResponseObj> verifyFirebaseToken(@RequestBody UserLoginReqDTO userLoginReqDTO){
         ResponseObj response = null;
 
         try{
-            UserLoginResDTO userLoginResDTO = this.userServiceImpl.getUserLoginDetailsFromUserJsonUrl(userLoginReqDTO.getUserJsonUrl(), userLoginReqDTO.getAuthType());
+            UserLoginResDTO userLoginResDTO = this.userServiceImpl.verifyFirebaseToken(userLoginReqDTO.getFirebaseToken());
 
             if(userLoginResDTO!=null && userLoginResDTO.getToken()!=null){
                 response = ResponseObj.builder().status(1).message("Logged in successfully.").data(userLoginResDTO).build();

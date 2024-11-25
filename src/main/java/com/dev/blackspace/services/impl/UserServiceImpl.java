@@ -3,7 +3,6 @@ package com.dev.blackspace.services.impl;
 import com.dev.blackspace.DTOs.*;
 import com.dev.blackspace.entities.UserExperienceEntity;
 import com.dev.blackspace.entities.UserLoginEntity;
-import com.dev.blackspace.entities.UserProfileEntity;
 import com.dev.blackspace.repositories.UserExperienceRepo;
 import com.dev.blackspace.repositories.UserLoginRepo;
 import com.dev.blackspace.repositories.UserProfileRepo;
@@ -11,6 +10,9 @@ import com.dev.blackspace.utils.JWTUtil;
 import com.dev.blackspace.utils.StringUtil;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseToken;
+import com.google.firebase.auth.UserRecord;
 import io.micrometer.common.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,55 +93,47 @@ public class UserServiceImpl {
         return Collections.emptyList();
     }
 
-    public UserLoginResDTO getUserLoginDetailsFromUserJsonUrl(String userJsonUrl, Integer authType){
+    public UserLoginResDTO verifyFirebaseToken(String firebaseToken){
         UserLoginResDTO userLoginResDTO = new UserLoginResDTO();
-        if(stringUtil.verifyDomain(userJsonUrl)){
-            String userOTPData = this.restTemplate.getForObject(userJsonUrl, String.class);
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
+        try{
+            FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(firebaseToken);
+            String uid = decodedToken.getUid();
+            if(Objects.nonNull(uid) && !uid.isBlank()){
+                UserRecord userRecord = FirebaseAuth.getInstance().getUser(uid);
+                if(Objects.nonNull(userRecord)){
+                    if(Objects.nonNull(userRecord.getEmail()) && !userRecord.getEmail().isBlank()){
+                        UserLoginResDetailsDTO userDetails = this.findUserLoginByEmailAndInsert(userRecord.getEmail());
+                        String token = this.jwtUtil.generateToken(userRecord.getEmail());
+                        userLoginResDTO.setToken(token);
+                        userLoginResDTO.setUserDetails(userDetails);
 
-            if(authType.equals(0)){
-                try{
-                    PhoneAuthResponse phoneAuthResponse = objectMapper.readValue(userOTPData, PhoneAuthResponse.class);
-                    if(phoneAuthResponse!=null && phoneAuthResponse.getUserPhoneNumber()!=null && !phoneAuthResponse.getUserPhoneNumber().isBlank()){
-                        UserLoginResDetailsDTO userLoginResDetailsDTO = this.findUserLoginByPhoneAndInsert(phoneAuthResponse.getUserPhoneNumber(), phoneAuthResponse.getUserCountryCode());
-                        userLoginResDTO.setToken(jwtUtil.generateToken(phoneAuthResponse.getUserPhoneNumber()));
-                        userLoginResDTO.setUserDetails(userLoginResDetailsDTO);
                     }
-                }
-                catch (Exception e){
-                    log.error("Inside catch block of getUserLoginDetailsFromUserJsonUrl():::Error generating phone token:::{}",e);
-                }
-
-            } else if (authType.equals(1)) {
-                try{
-                    EmailAuthResponse emailAuthResponse = objectMapper.readValue(userOTPData, EmailAuthResponse.class);
-                    if(emailAuthResponse!=null && emailAuthResponse.getUserEmailId()!=null && !emailAuthResponse.getUserEmailId().isBlank()){
-                        UserLoginResDetailsDTO userLoginResDetailsDTO = this.findUserLoginByEmailAndInsert(emailAuthResponse.getUserEmailId());
-                        userLoginResDTO.setToken(jwtUtil.generateToken(emailAuthResponse.getUserEmailId()));
-                        userLoginResDTO.setUserDetails(userLoginResDetailsDTO);
+                    if(Objects.nonNull(userRecord.getPhoneNumber()) && !userRecord.getPhoneNumber().isBlank()){
+                        UserLoginResDetailsDTO userDetails = this.findUserLoginByPhoneAndInsert(userRecord.getPhoneNumber());
+                        String token = this.jwtUtil.generateToken(userRecord.getEmail());
+                        userLoginResDTO.setToken(token);
+                        userLoginResDTO.setUserDetails(userDetails);
                     }
-                }
-                catch (Exception e){
-                    log.error("Inside catch block of getUserLoginDetailsFromUserJsonUrl():::Error generating email token:::{}",e);
                 }
             }
+        }
+        catch(Exception e){
+            log.error(":::Exception during firebase token verification:::",e);
+            return new UserLoginResDTO();
         }
         return userLoginResDTO;
     }
 
-    public UserLoginResDetailsDTO findUserLoginByPhoneAndInsert(String phoneNumber, String countryCode){
+    public UserLoginResDetailsDTO findUserLoginByPhoneAndInsert(String phoneNumber){
         UserLoginEntity userLoginEntity = this.userLoginRepo.findByPhoneOrEmail(phoneNumber);
         if(Objects.isNull(userLoginEntity)){
             userLoginEntity = new UserLoginEntity();
             userLoginEntity.setPhoneNumber(phoneNumber);
-            userLoginEntity.setPhoneCountryCode(countryCode);
             userLoginEntity.setCreatedAt(new Date());
             userLoginRepo.save(userLoginEntity);
         }
         UserLoginResDetailsDTO userLoginResDetailsDTO = UserLoginResDetailsDTO.builder().userId(userLoginEntity.getUserId()).userEmail(userLoginEntity.getEmail())
-                .userPhoneNumber(userLoginEntity.getPhoneNumber()).userProfileId(userLoginEntity.getUserProfileId())
-                .phoneCountryCode(userLoginEntity.getPhoneCountryCode()).build();
+                .userPhoneNumber(userLoginEntity.getPhoneNumber()).userProfileId(userLoginEntity.getUserProfileId()).build();
         return userLoginResDetailsDTO;
     }
 
@@ -152,8 +146,7 @@ public class UserServiceImpl {
             userLoginRepo.save(userLoginEntity);
         }
         UserLoginResDetailsDTO userLoginResDetailsDTO = UserLoginResDetailsDTO.builder().userId(userLoginEntity.getUserId()).userEmail(userLoginEntity.getEmail())
-                .userPhoneNumber(userLoginEntity.getPhoneNumber()).userProfileId(userLoginEntity.getUserProfileId())
-                .phoneCountryCode(userLoginEntity.getPhoneCountryCode()).build();
+                .userPhoneNumber(userLoginEntity.getPhoneNumber()).userProfileId(userLoginEntity.getUserProfileId()).build();
 
         return userLoginResDetailsDTO;
     }

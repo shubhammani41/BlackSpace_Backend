@@ -12,5 +12,4 @@ public class UserLoginResDetailsDTO {
     private String userPhoneNumber;
     private String userEmail;
     private Long userProfileId;
-    private String phoneCountryCode;
 }

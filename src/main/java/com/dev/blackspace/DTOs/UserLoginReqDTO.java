@@ -11,8 +11,5 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserLoginReqDTO {
-    private String userJsonUrl;
-
-    //0 for phone 1 for email
-    private Integer authType;
+    private String firebaseToken;
 }
