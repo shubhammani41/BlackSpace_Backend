@@ -24,9 +24,6 @@ public class UserLoginEntity {
     @Column(name = "phone_number", unique = true)
     private String phoneNumber;
 
-    @Column(name = "phone_country_code")
-    private String phoneCountryCode;
-
     @Column(name = "email", unique = true)
     private String email;
 

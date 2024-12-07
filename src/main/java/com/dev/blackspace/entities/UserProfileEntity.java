@@ -70,7 +70,4 @@ public class UserProfileEntity {
 
     @Column(name = "position_id", nullable = false)
     private Integer positionId;
-
-    @Column(name = "organization_id", nullable = false)
-    private Integer organizationId;
 }

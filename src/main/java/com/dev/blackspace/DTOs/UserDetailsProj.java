@@ -11,8 +11,6 @@ public interface UserDetailsProj {
 
     String getLastName();
 
-    String getEmail();
-
     Date getDateOfBirth();
 
     String getProfilePictureUrl();
@@ -39,8 +37,6 @@ public interface UserDetailsProj {
 
     String getIndustryName();
 
-    String getOrganizationName();
-
     Integer getCountryId();
 
     Integer getStateId();
@@ -51,15 +47,13 @@ public interface UserDetailsProj {
 
     Integer getIndustryId();
 
-    Integer getOrganizationId();
-
     Integer getRoleId();
 
     String getRoleName();
 
     Integer getExperience();
 
-    String getPhoneNumber();
-
-    String getPhoneCountryCode();
+//    need to provide privacy settings before displaying phone and email
+//    String getEmail();
+//    String getPhoneNumber();
 }

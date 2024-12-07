@@ -9,13 +9,16 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface UserProfileRepo extends JpaRepository<UserProfileEntity, Long> {
 
-    String USER_DETAIL_QUERY = "SELECT ul.user_id as userId, ul.user_profile_id as userProfileId, ul.email as email, ul.phone_number as phoneNumber, ul.phone_country_code as phoneCountryCode,\n" +
+    String USER_DETAIL_QUERY = "SELECT ul.user_id as userId, ul.user_profile_id as userProfileId,\n" +
+
+//            need to provide privacy settings before displaying phone and email
+//            "ul.email as email, ul.phone_number as phoneNumber,\n" +
+
             "up.first_name as firstName, up.last_name as lastName, up.experience as experience, up.date_of_birth as dateOfBirth, up.profile_picture_url as profilePictureUrl, up.gender as gender, up.bio as bio, up.website_url as websiteUrl, up.user_name as userName, sd.skills, ed.user_experience,\n" +
             "cnt.country_name as countryName, cnt.country_id as countryId,\n" +
             "sts.state_name as StateName, sts.state_id as stateId,\n" +
             "cts.city_name as cityName, cts.city_id as cityId, post.position_name as positionName, post.position_id as positionId,\n" +
             "inds.industry_name as industryName, inds.industry_id as IndustryId,\n" +
-            "orgs.organization_name as organizationName, orgs.organization_id as organizationId,\n" +
             "role.role_name as roleName, role.role_id as roleId\n" +
             "FROM user_login ul\n" +
             "LEFT JOIN user_profile as up on ul.user_profile_id = up.user_id\n" +
@@ -24,7 +27,6 @@ public interface UserProfileRepo extends JpaRepository<UserProfileEntity, Long> 
             "LEFT JOIN cities cts on cts.city_id = up.city_id\n" +
             "LEFT JOIN positions post on post.position_id = up.position_id\n" +
             "LEFT JOIN industries inds on inds.industry_id = post.industry_id\n" +
-            "LEFT JOIN organizations orgs on orgs.organization_id = up.organization_id\n" +
             "LEFT JOIN role role on role.role_id = up.role_id\n" +
 
             "LEFT JOIN (SELECT up.user_id,json_arrayagg(json_object(\"skill_id\",sk.skill_id, \"skill_name\",sk.skill_name)) as skills\n" +
