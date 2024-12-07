@@ -53,7 +53,11 @@ public interface UserDetailsProj {
 
     Integer getExperience();
 
-//    need to provide privacy settings before displaying phone and email
-//    String getEmail();
-//    String getPhoneNumber();
+    String getEmail();
+
+    String getPhoneNumber();
+
+    Boolean getIsEmailPrivate();
+
+    Boolean getIsPhonePrivate();
 }
