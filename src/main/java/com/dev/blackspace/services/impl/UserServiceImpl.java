@@ -8,8 +8,6 @@ import com.dev.blackspace.repositories.UserLoginRepo;
 import com.dev.blackspace.repositories.UserProfileRepo;
 import com.dev.blackspace.utils.JWTUtil;
 import com.dev.blackspace.utils.StringUtil;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
 import com.google.firebase.auth.UserRecord;
@@ -51,10 +49,8 @@ public class UserServiceImpl {
             return PaginationDTO.<List<UserDetailsProj>>builder().pageSize(pageData.getSize())
                     .totalPages(pageData.getTotalPages()).totalElements(pageData.getTotalElements()).data(pageData.getContent()).build();
         }
-
         return PaginationDTO.<List<UserDetailsProj>>builder().pageSize(0)
                 .totalPages(0).totalElements(0L).data(Collections.emptyList()).build();
-
     }
 
     public PaginationDTO<List<UserDetailsProj>> searchUsersByKeyword(Pageable pageable, String searchKeyWord) {
@@ -66,7 +62,6 @@ public class UserServiceImpl {
         }
         return PaginationDTO.<List<UserDetailsProj>>builder().pageSize(0)
                 .totalPages(0).totalElements(0L).data(Collections.emptyList()).build();
-
     }
 
     public UserDetailsProj getUserByUserName(String userName) {
@@ -86,9 +81,9 @@ public class UserServiceImpl {
             return Collections.emptyList();
         }
 
-        Optional<List<UserExperienceEntity>> userExpDataOptional = this.userExpRepo.findByUserIdOrderByFromDateDesc(userId);
-        if (userExpDataOptional != null && userExpDataOptional.isPresent()) {
-            return userExpDataOptional.get();
+        List<UserExperienceEntity> userExpDataOptional = this.userExpRepo.findByUserIdOrderByFromDateDesc(userId);
+        if (userExpDataOptional != null) {
+            return userExpDataOptional;
         }
         return Collections.emptyList();
     }
@@ -147,7 +142,6 @@ public class UserServiceImpl {
         }
         UserLoginResDetailsDTO userLoginResDetailsDTO = UserLoginResDetailsDTO.builder().userId(userLoginEntity.getUserId()).userEmail(userLoginEntity.getEmail())
                 .userPhoneNumber(userLoginEntity.getPhoneNumber()).userProfileId(userLoginEntity.getUserProfileId()).build();
-
         return userLoginResDetailsDTO;
     }
 }

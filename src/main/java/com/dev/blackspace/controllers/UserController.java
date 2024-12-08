@@ -22,11 +22,6 @@ public class UserController {
     @Autowired
     private UserServiceImpl userServiceImpl;
 
-    @GetMapping("/public/getUserList")
-    public List<UserProfileEntity> getUserList(){
-        return this.userProfileRepo.findAll();
-    }
-
     @GetMapping("/public/getRandomUserList")
     public ResponseEntity<ResponseObj> getRandomUserList(@RequestParam Integer pageNumber, @RequestParam Integer pageSize){
         ResponseObj response = null;

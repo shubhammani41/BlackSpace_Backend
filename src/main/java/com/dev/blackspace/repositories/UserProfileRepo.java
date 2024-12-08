@@ -35,7 +35,7 @@ public interface UserProfileRepo extends JpaRepository<UserProfileEntity, Long> 
             "GROUP BY up.user_id) AS sd ON sd.user_id = up.user_id\n" +
 
             "LEFT JOIN (SELECT up.user_id,\n" +
-            "IF(COUNT(exp.user_id > 0),json_arrayagg(json_object(\"organization_id\",exp.organization_id, \"organization_name\",exp.organization_name, \"from_date\",exp.from_date)),'[]') as user_experience\n" +
+            "IF(COUNT(exp.user_id > 0),json_arrayagg(json_object(\"organization_id\",exp.organization_id, \"organization_name\",exp.organization_name, \"from_date\",exp.from_date, \"is_current_organization\",exp.is_current_organization)),'[]') as user_experience\n" +
             "FROM user_profile up\n" +
             "LEFT JOIN user_experience exp ON exp.user_id = up.user_id\n" +
             "GROUP BY up.user_id) AS ed ON ed.user_id = up.user_id\n"+

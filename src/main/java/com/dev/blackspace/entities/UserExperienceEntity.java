@@ -1,5 +1,6 @@
 package com.dev.blackspace.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -40,7 +41,8 @@ public class UserExperienceEntity {
     private OrganizationEntity organizationDetails;
 
     @Column(name = "is_current_organization")
-    private boolean currentOrganization;
+    @JsonProperty("isCurrentOrganization")
+    private boolean isCurrentOrganization;
 
     @Column(name = "description1")
     private String description1;

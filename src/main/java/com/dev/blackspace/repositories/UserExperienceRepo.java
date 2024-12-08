@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface UserExperienceRepo extends JpaRepository<UserExperienceEntity, Integer> {
 
-    Optional<List<UserExperienceEntity>> findByUserIdOrderByFromDateDesc(int userId);
+    List<UserExperienceEntity> findByUserIdOrderByFromDateDesc(int userId);
 }
