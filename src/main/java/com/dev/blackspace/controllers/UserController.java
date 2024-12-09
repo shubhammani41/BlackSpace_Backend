@@ -28,7 +28,7 @@ public class UserController {
 
         try{
             Pageable pageable = PageRequest.of(pageNumber, pageSize);
-            PaginationDTO<List<UserDetailsProj>> userList = this.userServiceImpl.getRandomUserListByPage(pageable);
+            PaginationDTO<List<UserDetailsDTO>> userList = this.userServiceImpl.getRandomUserListByPage(pageable);
 
             if(userList!=null && userList.getData()!=null){
                 response = ResponseObj.builder().status(1).message("Data fetched successfully.").data(userList).build();
@@ -54,7 +54,7 @@ public class UserController {
 
         try{
             Pageable pageable = PageRequest.of(pageNumber, pageSize);
-            PaginationDTO<List<UserDetailsProj>> userList = this.userServiceImpl.searchUsersByKeyword(pageable, searchKeyWord);
+            PaginationDTO<List<UserDetailsDTO>> userList = this.userServiceImpl.searchUsersByKeyword(pageable, searchKeyWord);
 
             if(userList!=null && userList.getData()!=null){
                 response = ResponseObj.builder().status(1).message("Data fetched successfully.").data(userList).build();
@@ -80,7 +80,7 @@ public class UserController {
         ResponseObj response = null;
 
         try{
-            UserDetailsProj userData = this.userServiceImpl.getUserByUserName(userName);
+            UserDetailsDTO userData = this.userServiceImpl.getUserByUserName(userName);
 
             if(userData!=null){
                 response = ResponseObj.builder().status(1).message("Data fetched successfully.").data(userData).build();

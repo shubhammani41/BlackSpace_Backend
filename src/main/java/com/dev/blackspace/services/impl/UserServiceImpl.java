@@ -41,37 +41,43 @@ public class UserServiceImpl {
     private RestTemplate restTemplate;
 
     @Autowired
-    JWTUtil jwtUtil;
+    private JWTUtil jwtUtil;
 
-    public PaginationDTO<List<UserDetailsProj>> getRandomUserListByPage(Pageable pageable) {
+    @Autowired
+    private UserDetailsDTOMapper userDetailsDTOMapper;
+
+    public UserServiceImpl() {
+    }
+
+    public PaginationDTO<List<UserDetailsDTO>> getRandomUserListByPage(Pageable pageable) {
         Page<UserDetailsProj> pageData = this.userRepo.findUserDetailsByRandomAndPage(pageable);
         if (pageData != null) {
-            return PaginationDTO.<List<UserDetailsProj>>builder().pageSize(pageData.getSize())
-                    .totalPages(pageData.getTotalPages()).totalElements(pageData.getTotalElements()).data(pageData.getContent()).build();
+            return PaginationDTO.<List<UserDetailsDTO>>builder().pageSize(pageData.getSize())
+                    .totalPages(pageData.getTotalPages()).totalElements(pageData.getTotalElements()).data(userDetailsDTOMapper.toUserDetailsDTOList(pageData.getContent())).build();
         }
-        return PaginationDTO.<List<UserDetailsProj>>builder().pageSize(0)
+        return PaginationDTO.<List<UserDetailsDTO>>builder().pageSize(0)
                 .totalPages(0).totalElements(0L).data(Collections.emptyList()).build();
     }
 
-    public PaginationDTO<List<UserDetailsProj>> searchUsersByKeyword(Pageable pageable, String searchKeyWord) {
+    public PaginationDTO<List<UserDetailsDTO>> searchUsersByKeyword(Pageable pageable, String searchKeyWord) {
         String searchRegex = this.stringUtil.getSearchRegex(searchKeyWord);
         Page<UserDetailsProj> pageData = this.userRepo.findUserDetailsBySearchKeyWord(pageable, searchRegex);
         if (pageData != null) {
-            return PaginationDTO.<List<UserDetailsProj>>builder().pageSize(pageData.getSize())
-                    .totalPages(pageData.getTotalPages()).totalElements(pageData.getTotalElements()).data(pageData.getContent()).build();
+            return PaginationDTO.<List<UserDetailsDTO>>builder().pageSize(pageData.getSize())
+                    .totalPages(pageData.getTotalPages()).totalElements(pageData.getTotalElements()).data(userDetailsDTOMapper.toUserDetailsDTOList(pageData.getContent())).build();
         }
-        return PaginationDTO.<List<UserDetailsProj>>builder().pageSize(0)
+        return PaginationDTO.<List<UserDetailsDTO>>builder().pageSize(0)
                 .totalPages(0).totalElements(0L).data(Collections.emptyList()).build();
     }
 
-    public UserDetailsProj getUserByUserName(String userName) {
+    public UserDetailsDTO getUserByUserName(String userName) {
         if (userName == null || StringUtils.isBlank(userName)) {
             return null;
         }
 
         UserDetailsProj userData = this.userRepo.findUserDetailsByUserName(userName);
         if (userData != null) {
-            return userData;
+            return userDetailsDTOMapper.toUserDetailsDTO(userData);
         }
         return null;
     }
