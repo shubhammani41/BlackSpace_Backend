@@ -40,14 +40,14 @@ public interface UserProfileRepo extends JpaRepository<UserProfileEntity, Long> 
             "LEFT JOIN user_experience exp ON exp.user_id = up.user_id\n" +
             "GROUP BY up.user_id) AS ed ON ed.user_id = up.user_id\n"+
 
-            "WHERE up.is_deactivated = 0\n";
+            "WHERE ul.is_deactivated = 0\n";
 
     UserProfileEntity findByUserName(String userName);
 
     UserProfileEntity findByUserId(Long userId);
 
     @Query(value = USER_DETAIL_QUERY +
-            "GROUP BY up.user_id\n", nativeQuery = true)
+            "GROUP BY ul.user_id\n", nativeQuery = true)
     Page<UserDetailsProj> findUserDetailsByRandomAndPage(Pageable pageable);
 
     @Query(value = USER_DETAIL_QUERY +
@@ -70,13 +70,13 @@ public interface UserProfileRepo extends JpaRepository<UserProfileEntity, Long> 
             "       AND LOWER(exp.organization_name) REGEXP :searchRegex\n" +
             "   )\n"+
             ")\n" +
-            "GROUP BY up.user_id\n",
+            "GROUP BY ul.user_id\n",
             nativeQuery = true)
     Page<UserDetailsProj> findUserDetailsBySearchKeyWord(Pageable pageable, String searchRegex);
 
     @Query(value = USER_DETAIL_QUERY +
             "AND up.user_name = :userName\n" +
-            "GROUP BY up.user_id\n",
+            "GROUP BY ul.user_id\n",
             nativeQuery = true)
     UserDetailsProj findUserDetailsByUserName(String userName);
 

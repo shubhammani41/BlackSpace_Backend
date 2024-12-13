@@ -12,24 +12,19 @@ import java.util.Collection;
 import java.util.Collections;
 
 public class CustomUserDetails implements org.springframework.security.core.userdetails.UserDetails {
-    private UserLoginEntity user;
     private UserProfileEntity userProfile;
-    @Autowired
-    private UserProfileRepo userProfileRepo;
-    @Autowired
-    private RoleServiceImpl roleService;
+    private UserLoginEntity userLoginData;
 
-    public CustomUserDetails(UserLoginEntity user) {
-        this.user = user;
-        this.userProfile = this.userProfileRepo.findByUserId(user.getUserProfileId());
+    public CustomUserDetails(UserLoginEntity userLoginData,UserProfileEntity userProfile) {
+        this.userLoginData = userLoginData;
+        this.userProfile = userProfile;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
             if(userProfile!=null){
-                Integer roleId = this.userProfileRepo.findByUserId(user.getUserProfileId()).getRoleId();
-                String role = roleService.getAuthorityNameById(roleId);
-                SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
+                Integer roleId = userProfile.getRoleId();
+                SimpleGrantedAuthority authority = new SimpleGrantedAuthority(String.valueOf(roleId));
                 return Collections.singletonList(authority);
             }
             return Collections.emptyList();
@@ -50,15 +45,15 @@ public class CustomUserDetails implements org.springframework.security.core.user
 
     @Override
     public boolean isAccountNonExpired() {
-        if(userProfile!=null){
-            return !userProfile.getIsDeactivated();
-        }
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        if(userLoginData!=null){
+            return !userLoginData.getIsDeactivated();
+        }
+        return false;
     }
 
     @Override

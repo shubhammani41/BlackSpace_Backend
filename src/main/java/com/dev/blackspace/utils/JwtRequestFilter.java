@@ -43,8 +43,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(subject);
 
-            if (jwtUtil.validateToken(jwt, subject)) {
-
+            if (userDetails.isAccountNonLocked() && jwtUtil.validateToken(jwt, subject)) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 usernamePasswordAuthenticationToken

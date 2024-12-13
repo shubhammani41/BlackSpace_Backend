@@ -13,13 +13,18 @@ import org.springframework.stereotype.Service;
 public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private UserLoginRepo userLoginRepo;
+    @Autowired
+    private UserProfileRepo userProfileRepo;
+    private UserProfileEntity userProfile;
+    private UserLoginEntity userLoginData;
 
     @Override
     public CustomUserDetails loadUserByUsername(String phoneOrEmail) throws IllegalArgumentException {
-        UserLoginEntity user = userLoginRepo.findByPhoneOrEmail(phoneOrEmail);
-        if (user == null) {
+        this.userLoginData = userLoginRepo.findByPhoneOrEmail(phoneOrEmail);
+        if (userLoginData == null) {
             throw new UsernameNotFoundException("User not found");
         }
-        return new CustomUserDetails(user);
+        this.userProfile = this.userProfileRepo.findByUserId(userLoginData.getUserProfileId());
+        return new CustomUserDetails(userLoginData,userProfile);
     }
 }

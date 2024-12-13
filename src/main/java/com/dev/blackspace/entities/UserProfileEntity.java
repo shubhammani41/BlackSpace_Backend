@@ -19,26 +19,26 @@ public class UserProfileEntity {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "first_name", nullable = false, length = 50)
+    @Column(name = "first_name")
     private String firstName;
 
-    @Column(name = "last_name", nullable = false, length = 50)
+    @Column(name = "last_name")
     private String lastName;
 
     @Column(name = "date_of_birth")
     private Date dateOfBirth;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "gender", length = 10)
+    @Column(name = "gender")
     private Gender gender;
 
-    @Column(name = "profile_picture_url", length = 255)
+    @Column(name = "profile_picture_url")
     private String profilePictureUrl;
 
-    @Column(name = "bio", length = 500)
+    @Column(name = "bio")
     private String bio;
 
-    @Column(name = "website_url", length = 255)
+    @Column(name = "website_url")
     private String websiteUrl;
 
     @Column(name = "date_joined")
@@ -47,7 +47,7 @@ public class UserProfileEntity {
     @Column(name = "experience")
     private Integer experience;
 
-    @Column(name = "user_name", nullable = false, length = 30, unique = true)
+    @Column(name = "user_name")
     private String userName;
 
     @Column(name = "country_id")
@@ -59,15 +59,18 @@ public class UserProfileEntity {
     @Column(name = "city_id")
     private Integer cityId;
 
-    @Column(name = "is_deactivated", nullable = false)
-    private Boolean isDeactivated;
-
-    @Column(name = "deactivated_at")
-    private Date deactivatedAt;
-
-    @Column(name = "role_id", nullable = false)
+    @Column(name = "role_id")
     private Integer roleId;
 
-    @Column(name = "position_id", nullable = false)
+    @Column(name = "position_id")
     private Integer positionId;
+
+    @Column(name = "skill_ids")
+    private String skillIds;
+
+    @Column(name = "is_phone_private")
+    private Boolean isPhonePrivate;
+
+    @Column(name = "is_email_private")
+    private Boolean isEmailPrivate;
 }

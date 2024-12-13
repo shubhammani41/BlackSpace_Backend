@@ -33,8 +33,8 @@ public class UserLoginEntity {
     @Column(name = "updated_at")
     private Date updatedAt;
 
-    @Column(name = "is_deactive")
-    private Boolean isDeactive = false;
+    @Column(name = "is_deactivated")
+    private Boolean isDeactivated = false;
 
     @Column(name = "deactivated_at")
     private Date deactivatedAt;

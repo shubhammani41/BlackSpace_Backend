@@ -3,6 +3,7 @@ package com.dev.blackspace.services.impl;
 import com.dev.blackspace.DTOs.*;
 import com.dev.blackspace.entities.UserExperienceEntity;
 import com.dev.blackspace.entities.UserLoginEntity;
+import com.dev.blackspace.entities.UserProfileEntity;
 import com.dev.blackspace.repositories.UserExperienceRepo;
 import com.dev.blackspace.repositories.UserLoginRepo;
 import com.dev.blackspace.repositories.UserProfileRepo;
@@ -29,7 +30,7 @@ public class UserServiceImpl {
     private UserLoginRepo userLoginRepo;
 
     @Autowired
-    private UserProfileRepo userRepo;
+    private UserProfileRepo userProfileRepo;
 
     @Autowired
     private UserExperienceRepo userExpRepo;
@@ -50,7 +51,7 @@ public class UserServiceImpl {
     }
 
     public PaginationDTO<List<UserDetailsDTO>> getRandomUserListByPage(Pageable pageable) {
-        Page<UserDetailsProj> pageData = this.userRepo.findUserDetailsByRandomAndPage(pageable);
+        Page<UserDetailsProj> pageData = this.userProfileRepo.findUserDetailsByRandomAndPage(pageable);
         if (pageData != null) {
             return PaginationDTO.<List<UserDetailsDTO>>builder().pageSize(pageData.getSize())
                     .totalPages(pageData.getTotalPages()).totalElements(pageData.getTotalElements()).data(userDetailsDTOMapper.toUserDetailsDTOList(pageData.getContent())).build();
@@ -61,7 +62,7 @@ public class UserServiceImpl {
 
     public PaginationDTO<List<UserDetailsDTO>> searchUsersByKeyword(Pageable pageable, String searchKeyWord) {
         String searchRegex = this.stringUtil.getSearchRegex(searchKeyWord);
-        Page<UserDetailsProj> pageData = this.userRepo.findUserDetailsBySearchKeyWord(pageable, searchRegex);
+        Page<UserDetailsProj> pageData = this.userProfileRepo.findUserDetailsBySearchKeyWord(pageable, searchRegex);
         if (pageData != null) {
             return PaginationDTO.<List<UserDetailsDTO>>builder().pageSize(pageData.getSize())
                     .totalPages(pageData.getTotalPages()).totalElements(pageData.getTotalElements()).data(userDetailsDTOMapper.toUserDetailsDTOList(pageData.getContent())).build();
@@ -75,11 +76,26 @@ public class UserServiceImpl {
             return null;
         }
 
-        UserDetailsProj userData = this.userRepo.findUserDetailsByUserName(userName);
+        UserDetailsProj userData = this.userProfileRepo.findUserDetailsByUserName(userName);
         if (userData != null) {
             return userDetailsDTOMapper.toUserDetailsDTO(userData);
         }
         return null;
+    }
+
+    public UserProfileEntity getUserByUserLoginId(String userLoginId) {
+        if (userLoginId == null || StringUtils.isBlank(userLoginId)) {
+            return null;
+        }
+        UserLoginEntity userLoginData = this.userLoginRepo.findByUserId(Long.valueOf(userLoginId));
+        if(Objects.isNull(userLoginData) || Objects.isNull(userLoginData.getUserProfileId())){
+            return null;
+        }
+        UserProfileEntity userProfileDetails = this.userProfileRepo.findByUserId(userLoginData.getUserProfileId());
+        if(Objects.isNull(userProfileDetails)){
+            return null;
+        }
+        return userProfileDetails;
     }
 
     public List<UserExperienceEntity> getUserExperienceByUserId(Integer userId) {
@@ -104,16 +120,20 @@ public class UserServiceImpl {
                 if(Objects.nonNull(userRecord)){
                     if(Objects.nonNull(userRecord.getEmail()) && !userRecord.getEmail().isBlank()){
                         UserLoginResDetailsDTO userDetails = this.findUserLoginByEmailAndInsert(userRecord.getEmail());
-                        String token = this.jwtUtil.generateToken(userRecord.getEmail());
-                        userLoginResDTO.setToken(token);
-                        userLoginResDTO.setUserDetails(userDetails);
+                        if(!userDetails.getIsDeactivated()){
+                            String token = this.jwtUtil.generateToken(userRecord.getEmail());
+                            userLoginResDTO.setToken(token);
+                            userLoginResDTO.setUserDetails(userDetails);
+                        }
 
                     }
                     if(Objects.nonNull(userRecord.getPhoneNumber()) && !userRecord.getPhoneNumber().isBlank()){
                         UserLoginResDetailsDTO userDetails = this.findUserLoginByPhoneAndInsert(userRecord.getPhoneNumber());
-                        String token = this.jwtUtil.generateToken(userRecord.getEmail());
-                        userLoginResDTO.setToken(token);
-                        userLoginResDTO.setUserDetails(userDetails);
+                        if(!userDetails.getIsDeactivated()){
+                            String token = this.jwtUtil.generateToken(userRecord.getEmail());
+                            userLoginResDTO.setToken(token);
+                            userLoginResDTO.setUserDetails(userDetails);
+                        }
                     }
                 }
             }
@@ -134,7 +154,7 @@ public class UserServiceImpl {
             userLoginRepo.save(userLoginEntity);
         }
         UserLoginResDetailsDTO userLoginResDetailsDTO = UserLoginResDetailsDTO.builder().userId(userLoginEntity.getUserId()).userEmail(userLoginEntity.getEmail())
-                .userPhoneNumber(userLoginEntity.getPhoneNumber()).userProfileId(userLoginEntity.getUserProfileId()).build();
+                .userPhoneNumber(userLoginEntity.getPhoneNumber()).userProfileId(userLoginEntity.getUserProfileId()).isDeactivated(userLoginEntity.getIsDeactivated()).build();
         return userLoginResDetailsDTO;
     }
 
@@ -147,7 +167,7 @@ public class UserServiceImpl {
             userLoginRepo.save(userLoginEntity);
         }
         UserLoginResDetailsDTO userLoginResDetailsDTO = UserLoginResDetailsDTO.builder().userId(userLoginEntity.getUserId()).userEmail(userLoginEntity.getEmail())
-                .userPhoneNumber(userLoginEntity.getPhoneNumber()).userProfileId(userLoginEntity.getUserProfileId()).build();
+                .userPhoneNumber(userLoginEntity.getPhoneNumber()).userProfileId(userLoginEntity.getUserProfileId()).isDeactivated(userLoginEntity.getIsDeactivated()).build();
         return userLoginResDetailsDTO;
     }
 }
