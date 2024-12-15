@@ -119,20 +119,20 @@ public class UserServiceImpl {
                 UserRecord userRecord = FirebaseAuth.getInstance().getUser(uid);
                 if(Objects.nonNull(userRecord)){
                     if(Objects.nonNull(userRecord.getEmail()) && !userRecord.getEmail().isBlank()){
-                        UserLoginResDetailsDTO userDetails = this.findUserLoginByEmailAndInsert(userRecord.getEmail());
-                        if(!userDetails.getIsDeactivated()){
+                        UserLoginEntity userLoginEntity = this.findUserLoginByEmailAndInsert(userRecord.getEmail());
+                        if(!userLoginEntity.getIsDeactivated()){
                             String token = this.jwtUtil.generateToken(userRecord.getEmail());
                             userLoginResDTO.setToken(token);
-                            userLoginResDTO.setUserDetails(userDetails);
+                            userLoginResDTO.setUserDetails(userLoginEntity);
                         }
 
                     }
                     if(Objects.nonNull(userRecord.getPhoneNumber()) && !userRecord.getPhoneNumber().isBlank()){
-                        UserLoginResDetailsDTO userDetails = this.findUserLoginByPhoneAndInsert(userRecord.getPhoneNumber());
-                        if(!userDetails.getIsDeactivated()){
+                        UserLoginEntity userLoginEntity = this.findUserLoginByPhoneAndInsert(userRecord.getPhoneNumber());
+                        if(!userLoginEntity.getIsDeactivated()){
                             String token = this.jwtUtil.generateToken(userRecord.getEmail());
                             userLoginResDTO.setToken(token);
-                            userLoginResDTO.setUserDetails(userDetails);
+                            userLoginResDTO.setUserDetails(userLoginEntity);
                         }
                     }
                 }
@@ -145,7 +145,7 @@ public class UserServiceImpl {
         return userLoginResDTO;
     }
 
-    public UserLoginResDetailsDTO findUserLoginByPhoneAndInsert(String phoneNumber){
+    public UserLoginEntity findUserLoginByPhoneAndInsert(String phoneNumber){
         UserLoginEntity userLoginEntity = this.userLoginRepo.findByPhoneOrEmail(phoneNumber);
         if(Objects.isNull(userLoginEntity)){
             userLoginEntity = new UserLoginEntity();
@@ -153,12 +153,11 @@ public class UserServiceImpl {
             userLoginEntity.setCreatedAt(new Date());
             userLoginRepo.save(userLoginEntity);
         }
-        UserLoginResDetailsDTO userLoginResDetailsDTO = UserLoginResDetailsDTO.builder().userId(userLoginEntity.getUserId()).userEmail(userLoginEntity.getEmail())
-                .userPhoneNumber(userLoginEntity.getPhoneNumber()).userProfileId(userLoginEntity.getUserProfileId()).isDeactivated(userLoginEntity.getIsDeactivated()).build();
-        return userLoginResDetailsDTO;
+
+        return userLoginEntity;
     }
 
-    public UserLoginResDetailsDTO findUserLoginByEmailAndInsert(String email){
+    public UserLoginEntity findUserLoginByEmailAndInsert(String email){
         UserLoginEntity userLoginEntity = this.userLoginRepo.findByPhoneOrEmail(email);
         if(Objects.isNull(userLoginEntity)){
             userLoginEntity = new UserLoginEntity();
@@ -166,8 +165,20 @@ public class UserServiceImpl {
             userLoginEntity.setCreatedAt(new Date());
             userLoginRepo.save(userLoginEntity);
         }
-        UserLoginResDetailsDTO userLoginResDetailsDTO = UserLoginResDetailsDTO.builder().userId(userLoginEntity.getUserId()).userEmail(userLoginEntity.getEmail())
-                .userPhoneNumber(userLoginEntity.getPhoneNumber()).userProfileId(userLoginEntity.getUserProfileId()).isDeactivated(userLoginEntity.getIsDeactivated()).build();
-        return userLoginResDetailsDTO;
+        return userLoginEntity;
+    }
+
+    public UserProfileEntity createBasicDetailsByUserLoginId(String userLoginId, UserProfileEntity userProfileData){
+        if (userLoginId == null || StringUtils.isBlank(userLoginId)) {
+            return null;
+        }
+        UserLoginEntity userLoginData = this.userLoginRepo.findByUserId(Long.valueOf(userLoginId));
+        if(Objects.isNull(userLoginData) || Objects.nonNull(userLoginData.getUserProfileId())){
+            return null;
+        }
+        userProfileRepo.save(userProfileData);
+        userLoginData.setUserProfileId(userProfileData.getUserId());
+        userLoginRepo.save(userLoginData);
+        return userProfileData;
     }
 }

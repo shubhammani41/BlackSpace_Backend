@@ -9,12 +9,13 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface UserProfileRepo extends JpaRepository<UserProfileEntity, Long> {
 
-    String USER_DETAIL_QUERY = "SELECT ul.user_id as userId, ul.user_profile_id as userProfileId,\n" +
+    String USER_DETAIL_QUERY = "SELECT ul.user_id as userId, ul.user_profile_id as userProfileId, ul.created_at as createdAt, ul.updated_at as updatedAt, ul.updated_by as updatedBy, \n" +
+            "up.created_at as userProfileCreatedAt, up.updated_at as userProfileUpdatedAt, up.updated_by as userProfileUpdatedBy, \n"+
             "CASE WHEN up.is_email_private = TRUE THEN NULL ELSE ul.email END as email\n," +
             "CASE WHEN up.is_phone_private = TRUE THEN NULL ELSE ul.phone_number END as phoneNumber,\n" +
             "up.is_email_private as isEmailPrivate,\n"+
             "up.is_phone_private as isPhonePrivate,\n"+
-            "up.first_name as firstName, up.last_name as lastName, up.experience as experience, up.date_of_birth as dateOfBirth, up.profile_picture_url as profilePictureUrl, up.gender as gender, up.bio as bio, up.website_url as websiteUrl, up.user_name as userName, sd.skills, ed.user_experience,\n" +
+            "up.first_name as firstName, up.last_name as lastName, up.date_of_birth as dateOfBirth, up.profile_picture_url as profilePictureUrl, up.gender as gender, up.bio as bio, up.website_url as websiteUrl, up.user_name as userName, sd.skills, ed.user_experience,\n" +
             "cnt.country_name as countryName, cnt.country_id as countryId,\n" +
             "sts.state_name as StateName, sts.state_id as stateId,\n" +
             "cts.city_name as cityName, cts.city_id as cityId, post.position_name as positionName, post.position_id as positionId,\n" +

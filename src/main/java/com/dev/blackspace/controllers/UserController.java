@@ -125,6 +125,31 @@ public class UserController {
         }
     }
 
+    @PostMapping("/createBasicDetailsByUserLoginId")
+    public ResponseEntity<ResponseObj> createBasicDetailsByUserLoginId(@RequestParam String userLoginId, @RequestBody UserProfileEntity userProfileEntity){
+        ResponseObj response = null;
+
+        try{
+            UserProfileEntity userData = this.userServiceImpl.createBasicDetailsByUserLoginId(userLoginId, userProfileEntity);
+
+            if(userData!=null){
+                response = ResponseObj.builder().status(1).message("Data fetched successfully.").data(userData).build();
+            }
+            else{
+                response = ResponseObj.builder().status(1).message("No data found!").data(null).build();
+            }
+            return ResponseEntity.ok(response);
+        }
+        catch (Exception e){
+            ErrorObj errorObj = ErrorObj.builder().errorCode("B_S_1").errorMessage("Exception occurred in fetching data!").build();
+            List<ErrorObj> errorList = new ArrayList<>();
+            errorList.add(errorObj);
+
+            response = ResponseObj.builder().status(0).message("Oops! Something went wrong!").data(null).errorList(errorList).build();
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
     @GetMapping("/public/getUserExperienceByUserId")
     public ResponseEntity<ResponseObj> getUserExperienceByUserId(@RequestParam Integer userId){
         ResponseObj response = null;

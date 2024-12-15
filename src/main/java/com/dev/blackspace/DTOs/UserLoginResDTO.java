@@ -1,5 +1,6 @@
 package com.dev.blackspace.DTOs;
 
+import com.dev.blackspace.entities.UserLoginEntity;
 import lombok.*;
 
 @Getter
@@ -9,5 +10,5 @@ import lombok.*;
 @Builder
 public class UserLoginResDTO {
     private String token;
-    private UserLoginResDetailsDTO userDetails;
+    private UserLoginEntity userDetails;
 }

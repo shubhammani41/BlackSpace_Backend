@@ -41,12 +41,6 @@ public class UserProfileEntity {
     @Column(name = "website_url")
     private String websiteUrl;
 
-    @Column(name = "date_joined")
-    private Date dateJoined;
-
-    @Column(name = "experience")
-    private Integer experience;
-
     @Column(name = "user_name")
     private String userName;
 
@@ -73,4 +67,13 @@ public class UserProfileEntity {
 
     @Column(name = "is_email_private")
     private Boolean isEmailPrivate;
+
+    @Column(name = "created_at")
+    private Date createdAt;
+
+    @Column(name = "updated_at")
+    private Date updatedAt;
+
+    @Column(name = "updated_by")
+    private Long updatedBy;
 }

@@ -60,4 +60,16 @@ public interface UserDetailsProj {
     Boolean getIsEmailPrivate();
 
     Boolean getIsPhonePrivate();
+
+    Date getCreatedAt();
+
+    Date getUpdatedAt();
+
+    Long getUpdatedBy();
+
+    Date getUserProfileCreatedAt();
+
+    Date getUserProfileUpdatedAt();
+
+    Long getUserProfileUpdatedBy();
 }

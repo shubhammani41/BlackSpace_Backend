@@ -33,6 +33,9 @@ public class UserLoginEntity {
     @Column(name = "updated_at")
     private Date updatedAt;
 
+    @Column(name = "updated_by")
+    private Long updatedBy;
+
     @Column(name = "is_deactivated")
     private Boolean isDeactivated = false;
 
