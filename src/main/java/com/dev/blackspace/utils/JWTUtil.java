@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -19,9 +20,11 @@ import java.util.function.Function;
 
 @Component
 public class JWTUtil {
+    @Value("${jwt.secret-key}")
+    private String SECRET_KEY;
 
-    private String SECRET_KEY = "b5jGxZmO/+k7nHf1Fhb2pF5x+V5rU5RzQK7kU5ovcW8=";
-    private Integer ACCESS_TOKEN_VALIDITY_SECONDS = 432000;
+    @Value("${jwt.access-token-validity-seconds}")
+    private Integer ACCESS_TOKEN_VALIDITY_SECONDS;
 
     public String extractSubject(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -40,7 +43,7 @@ public class JWTUtil {
         return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
     }
 
-    private Boolean isTokenExpired(String token) {
+    public Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
@@ -55,7 +58,7 @@ public class JWTUtil {
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY_SECONDS * 1000))
+                .setExpiration(new Date(System.currentTimeMillis() + (long) ACCESS_TOKEN_VALIDITY_SECONDS * 1000))
                 .setId(UUID.randomUUID().toString())
                 .signWith(getSignInKey() , SignatureAlgorithm.HS256)
                 .compact();

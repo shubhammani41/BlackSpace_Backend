@@ -36,7 +36,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
-            subject = jwtUtil.extractSubject(jwt);
+            if(!jwtUtil.isTokenExpired(jwt)){
+                subject = jwtUtil.extractSubject(jwt);
+            }
         }
 
         if (subject != null && SecurityContextHolder.getContext().getAuthentication() == null) {

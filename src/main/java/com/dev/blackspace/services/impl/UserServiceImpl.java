@@ -17,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -168,17 +170,16 @@ public class UserServiceImpl {
         return userLoginEntity;
     }
 
-    public UserProfileEntity createBasicDetailsByUserLoginId(String userLoginId, UserProfileEntity userProfileData){
-        if (userLoginId == null || StringUtils.isBlank(userLoginId)) {
-            return null;
-        }
-        UserLoginEntity userLoginData = this.userLoginRepo.findByUserId(Long.valueOf(userLoginId));
-        if(Objects.isNull(userLoginData) || Objects.nonNull(userLoginData.getUserProfileId())){
+    public UserProfileEntity saveBasicDetailsByUserLoginId(UserProfileEntity userProfileData){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String subject = authentication.getName();
+        UserLoginEntity userLoginEntity = this.userLoginRepo.findByPhoneOrEmail(subject);
+        if (Objects.isNull(userLoginEntity) || userLoginEntity.getUserId() == null) {
             return null;
         }
         userProfileRepo.save(userProfileData);
-        userLoginData.setUserProfileId(userProfileData.getUserId());
-        userLoginRepo.save(userLoginData);
+        userLoginEntity.setUserProfileId(userProfileData.getUserId());
+        userLoginRepo.save(userLoginEntity);
         return userProfileData;
     }
 }

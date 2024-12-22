@@ -125,12 +125,12 @@ public class UserController {
         }
     }
 
-    @PostMapping("/createBasicDetailsByUserLoginId")
-    public ResponseEntity<ResponseObj> createBasicDetailsByUserLoginId(@RequestParam String userLoginId, @RequestBody UserProfileEntity userProfileEntity){
+    @PostMapping("/saveBasicDetailsByUserLoginId")
+    public ResponseEntity<ResponseObj> saveBasicDetailsByUserLoginId( @RequestBody UserProfileEntity userProfileEntity){
         ResponseObj response = null;
 
         try{
-            UserProfileEntity userData = this.userServiceImpl.createBasicDetailsByUserLoginId(userLoginId, userProfileEntity);
+            UserProfileEntity userData = this.userServiceImpl.saveBasicDetailsByUserLoginId(userProfileEntity);
 
             if(userData!=null){
                 response = ResponseObj.builder().status(1).message("Data fetched successfully.").data(userData).build();
