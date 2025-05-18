@@ -4,6 +4,7 @@ import com.dev.blackspace.DTOs.*;
 import com.dev.blackspace.entities.UserExperienceEntity;
 import com.dev.blackspace.entities.UserLoginEntity;
 import com.dev.blackspace.entities.UserProfileEntity;
+import com.dev.blackspace.repositories.PostRepo;
 import com.dev.blackspace.repositories.UserExperienceRepo;
 import com.dev.blackspace.repositories.UserLoginRepo;
 import com.dev.blackspace.repositories.UserProfileRepo;
@@ -13,6 +14,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
 import com.google.firebase.auth.UserRecord;
 import io.micrometer.common.util.StringUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -48,6 +50,12 @@ public class UserServiceImpl {
 
     @Autowired
     private UserDetailsDTOMapper userDetailsDTOMapper;
+
+    @Autowired
+    private PostRepo postRepo;
+
+    @Autowired
+    private PostDetailsDTOMapper postDetailsDTOMapper;
 
     public UserServiceImpl() {
     }
@@ -181,5 +189,15 @@ public class UserServiceImpl {
         userLoginEntity.setUserProfileId(userProfileData.getUserId());
         userLoginRepo.save(userLoginEntity);
         return userProfileData;
+    }
+
+    public PaginationDTO<List<PostDetailsDTO>> getProfilePublicPostsByUserId(Pageable pageable, Integer userId) {
+        Page<PostDetailsProj> pageData = this.postRepo.findPublicPostDetailsByUserId(pageable, userId);
+        if (pageData != null) {
+            return PaginationDTO.<List<PostDetailsDTO>>builder().pageSize(pageData.getSize())
+                    .totalPages(pageData.getTotalPages()).totalElements(pageData.getTotalElements()).data(postDetailsDTOMapper.toPostDetailsDTOList(pageData.getContent())).build();
+        }
+        return PaginationDTO.<List<PostDetailsDTO>>builder().pageSize(0)
+                .totalPages(0).totalElements(0L).data(Collections.emptyList()).build();
     }
 }

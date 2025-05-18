@@ -5,6 +5,7 @@ import com.dev.blackspace.entities.UserExperienceEntity;
 import com.dev.blackspace.entities.UserProfileEntity;
 import com.dev.blackspace.repositories.UserProfileRepo;
 import com.dev.blackspace.services.impl.UserServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -187,6 +188,32 @@ public class UserController {
             }
             else{
                 response = ResponseObj.builder().status(1).message("Authentication failed").data(null).build();
+            }
+            return ResponseEntity.ok(response);
+        }
+        catch (Exception e){
+            ErrorObj errorObj = ErrorObj.builder().errorCode("B_S_1").errorMessage("Exception occurred in fetching data!").build();
+            List<ErrorObj> errorList = new ArrayList<>();
+            errorList.add(errorObj);
+
+            response = ResponseObj.builder().status(0).message("Oops! Something went wrong!").data(null).errorList(errorList).build();
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+    @GetMapping("/public/getProfilePublicPostsByUserId")
+    public ResponseEntity<ResponseObj> getProfilePostsByUserId(@RequestParam Integer pageNumber, @RequestParam Integer pageSize, @RequestParam Integer userId){
+        ResponseObj response = null;
+
+        try{
+            Pageable pageable = PageRequest.of(pageNumber, pageSize);
+            PaginationDTO<List<PostDetailsDTO>> postList = this.userServiceImpl.getProfilePublicPostsByUserId(pageable, userId);
+
+            if(postList!=null && postList.getData()!=null){
+                response = ResponseObj.builder().status(1).message("Data fetched successfully.").data(postList).build();
+            }
+            else{
+                response = ResponseObj.builder().status(1).message("No data found!").data(postList).build();
             }
             return ResponseEntity.ok(response);
         }

@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -13,6 +15,8 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface UserDetailsDTOMapper {
+    Logger logger = LoggerFactory.getLogger(UserDetailsDTOMapper.class);
+
     @Mapping(source = "skills", target = "skills", qualifiedByName = "mapJsonToObject")
     @Mapping(source = "userExperience", target = "userExperience", qualifiedByName = "mapJsonToObject")
     @Mapping(source = "userExperience", target = "experience", qualifiedByName = "calculateExperience")
@@ -26,7 +30,7 @@ public interface UserDetailsDTOMapper {
         try {
             return objectMapper.readValue(jsonString, Object.class);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logger.error("Failed to parse JSON string in mapJsonToObject in UserDetailsDTOMapper: {}", jsonString, e);
             return null;
         }
     }
@@ -40,7 +44,7 @@ public interface UserDetailsDTOMapper {
             JsonNode experiences = objectMapper.readTree(jsonString);
             return calculateTotalExperience(experiences);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logger.error("Failed to parse JSON string in calculateExperience in UserDetailsDTOMapper: {}", jsonString, e);
             return 0;
         }
     }
