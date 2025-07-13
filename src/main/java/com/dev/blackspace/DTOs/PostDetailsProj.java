@@ -6,6 +6,8 @@ public interface PostDetailsProj {
 
     Long getPostId();
     Long getUserId();
+    String getUserName();
+    String getProfilePictureUrl();
     String getPostCaption();
     String getVisibility();
     LocalDateTime getCreatedDate();

@@ -226,4 +226,30 @@ public class UserController {
             return ResponseEntity.internalServerError().body(response);
         }
     }
+
+    @GetMapping("/public/getPublicFeed")
+    public ResponseEntity<ResponseObj> getProfilePostsByUserId(@RequestParam Integer pageNumber, @RequestParam Integer pageSize){
+        ResponseObj response = null;
+
+        try{
+            Pageable pageable = PageRequest.of(pageNumber, pageSize);
+            PaginationDTO<List<PostDetailsDTO>> postList = this.userServiceImpl.getPublicFeed(pageable);
+
+            if(postList!=null && postList.getData()!=null){
+                response = ResponseObj.builder().status(1).message("Data fetched successfully.").data(postList).build();
+            }
+            else{
+                response = ResponseObj.builder().status(1).message("No data found!").data(postList).build();
+            }
+            return ResponseEntity.ok(response);
+        }
+        catch (Exception e){
+            ErrorObj errorObj = ErrorObj.builder().errorCode("B_S_1").errorMessage("Exception occurred in fetching data!").build();
+            List<ErrorObj> errorList = new ArrayList<>();
+            errorList.add(errorObj);
+
+            response = ResponseObj.builder().status(0).message("Oops! Something went wrong!").data(null).errorList(errorList).build();
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
 }

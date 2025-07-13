@@ -22,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
@@ -193,6 +194,16 @@ public class UserServiceImpl {
 
     public PaginationDTO<List<PostDetailsDTO>> getProfilePublicPostsByUserId(Pageable pageable, Integer userId) {
         Page<PostDetailsProj> pageData = this.postRepo.findPublicPostDetailsByUserId(pageable, userId);
+        if (pageData != null) {
+            return PaginationDTO.<List<PostDetailsDTO>>builder().pageSize(pageData.getSize())
+                    .totalPages(pageData.getTotalPages()).totalElements(pageData.getTotalElements()).data(postDetailsDTOMapper.toPostDetailsDTOList(pageData.getContent())).build();
+        }
+        return PaginationDTO.<List<PostDetailsDTO>>builder().pageSize(0)
+                .totalPages(0).totalElements(0L).data(Collections.emptyList()).build();
+    }
+
+    public PaginationDTO<List<PostDetailsDTO>> getPublicFeed(Pageable pageable) {
+        Page<PostDetailsProj> pageData = this.postRepo.findPublicFeed(pageable);
         if (pageData != null) {
             return PaginationDTO.<List<PostDetailsDTO>>builder().pageSize(pageData.getSize())
                     .totalPages(pageData.getTotalPages()).totalElements(pageData.getTotalElements()).data(postDetailsDTOMapper.toPostDetailsDTOList(pageData.getContent())).build();

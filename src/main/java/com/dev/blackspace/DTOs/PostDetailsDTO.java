@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 public class PostDetailsDTO {
     private Long postId;
     private Long userId;
+    private String userName;
+    private String profilePictureUrl;
     private String postCaption;
     private String visibility;
     private LocalDateTime createdDate;

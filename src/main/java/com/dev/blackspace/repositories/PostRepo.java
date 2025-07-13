@@ -11,6 +11,8 @@ public interface PostRepo extends JpaRepository<PostEntity, Long> {
     String POST_DETAILS_QUERY = "SELECT \n" +
             "  p.post_id AS postId,\n" +
             "  p.user_id AS userId,\n" +
+            "  up.user_name As userName,\n"+
+            "  up.profile_picture_url As profilePictureUrl,\n"+
             "  p.post_caption AS postCaption,\n" +
             "  p.visibility,\n" +
             "  p.created_date AS createdDate,\n" +
@@ -50,17 +52,30 @@ public interface PostRepo extends JpaRepository<PostEntity, Long> {
             "        'userId', pv.user_id,\n" +
             "        'reaction', pv.reaction,\n" +
             "        'timesViewed', pv.times_viewed,\n" +
-            "        'viewedAt', pv.viewed_at\n" +
+            "        'viewedAt', pv.viewed_at,\n" +
+            "        'userName', usp.user_name,\n"+
+            "        'profilePictureUrl', usp.profile_picture_url\n"+
             "      )\n" +
             "    )\n" +
             "   FROM post_views pv\n" +
+            "   JOIN user_profile usp ON usp.user_id = pv.user_id\n"+
             "   WHERE pv.post_id = p.post_id\n" +
             "  ) AS postViews\n" +
             "\n" +
-            "FROM post p\n";
+            "FROM post p\n"+
+            "JOIN user_profile up ON up.user_id = p.user_id\n";
 
     @Query(value = POST_DETAILS_QUERY +
             "WHERE p.user_id=:userId AND p.visibility='PUBLIC'\n" +
-            "ORDER BY p.created_date\n", nativeQuery = true)
+            "ORDER BY p.created_date\n",
+            countQuery = "SELECT COUNT(*) FROM post p WHERE p.user_id=:userId AND p.visibility='PUBLIC'",
+            nativeQuery = true)
     Page<PostDetailsProj> findPublicPostDetailsByUserId(Pageable pageable, Integer userId);
+
+    @Query(value = POST_DETAILS_QUERY +
+            "WHERE p.visibility='PUBLIC'\n" +
+            "ORDER BY p.created_date\n",
+            countQuery = "SELECT COUNT(*) FROM post p WHERE p.visibility='PUBLIC'",
+            nativeQuery = true)
+    Page<PostDetailsProj> findPublicFeed(Pageable pageable);
 }
