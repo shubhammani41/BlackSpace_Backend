@@ -6,16 +6,17 @@ import com.google.firebase.FirebaseOptions;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 @Configuration
 public class FirebaseConfig {
     @PostConstruct
     public void initializeFirebase() throws IOException {
-        FileInputStream serviceAccount =
-                new FileInputStream("src/main/resources/blackspace-firebase-adminsdk.json");
+        InputStream serviceAccount =
+                getClass().getClassLoader().getResourceAsStream("blackspace-firebase-adminsdk.json");
 
+        assert serviceAccount != null;
         FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                 .build();
