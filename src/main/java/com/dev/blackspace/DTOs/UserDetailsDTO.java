@@ -27,9 +27,6 @@ public class UserDetailsDTO {
     private String cityName;
     private String positionName;
     private String industryName;
-    private Integer countryId;
-    private Integer stateId;
-    private Integer cityId;
     private Integer positionId;
     private Integer industryId;
     private Integer roleId;

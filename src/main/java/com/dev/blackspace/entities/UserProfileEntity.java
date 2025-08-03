@@ -44,14 +44,14 @@ public class UserProfileEntity {
     @Column(name = "user_name")
     private String userName;
 
-    @Column(name = "country_id")
-    private Integer countryId;
+    @Column(name = "country_name")
+    private String countryName;
 
-    @Column(name = "state_id")
-    private Integer stateId;
+    @Column(name = "state_name")
+    private String stateName;
 
-    @Column(name = "city_id")
-    private Integer cityId;
+    @Column(name = "city_name")
+    private String cityName;
 
     @Column(name = "role_id")
     private Integer roleId;

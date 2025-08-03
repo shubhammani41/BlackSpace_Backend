@@ -16,16 +16,13 @@ public interface UserProfileRepo extends JpaRepository<UserProfileEntity, Long> 
             "up.is_email_private as isEmailPrivate,\n"+
             "up.is_phone_private as isPhonePrivate,\n"+
             "up.first_name as firstName, up.last_name as lastName, up.date_of_birth as dateOfBirth, up.profile_picture_url as profilePictureUrl, up.gender as gender, up.bio as bio, up.website_url as websiteUrl, up.user_name as userName, sd.skills, ed.user_experience,\n" +
-            "cnt.country_name as countryName, cnt.country_id as countryId,\n" +
-            "sts.state_name as StateName, sts.state_id as stateId,\n" +
-            "cts.city_name as cityName, cts.city_id as cityId, post.position_name as positionName, post.position_id as positionId,\n" +
+            "up.country_name as countryName,\n" +
+            "up.state_name as StateName,\n" +
+            "up.city_name as cityName, post.position_name as positionName, post.position_id as positionId,\n" +
             "inds.industry_name as industryName, inds.industry_id as IndustryId,\n" +
             "role.role_name as roleName, role.role_id as roleId\n" +
             "FROM user_login ul\n" +
             "LEFT JOIN user_profile as up on ul.user_profile_id = up.user_id\n" +
-            "LEFT JOIN countries cnt on cnt.country_id = up.country_id\n" +
-            "LEFT JOIN states sts on sts.state_id = up.state_id\n" +
-            "LEFT JOIN cities cts on cts.city_id = up.city_id\n" +
             "LEFT JOIN positions post on post.position_id = up.position_id\n" +
             "LEFT JOIN industries inds on inds.industry_id = post.industry_id\n" +
             "LEFT JOIN role role on role.role_id = up.role_id\n" +
@@ -57,9 +54,9 @@ public interface UserProfileRepo extends JpaRepository<UserProfileEntity, Long> 
             "    LOWER(up.last_name) REGEXP :searchRegex OR\n" +
             "    LOWER(up.user_name) REGEXP :searchRegex OR\n" +
             "    LOWER(post.position_name) REGEXP :searchRegex OR\n" +
-            "    LOWER(cnt.country_name) REGEXP :searchRegex OR\n" +
-            "    LOWER(cts.city_name) REGEXP :searchRegex OR\n" +
-            "    LOWER(sts.state_name) REGEXP :searchRegex OR\n" +
+            "    LOWER(up.country_name) REGEXP :searchRegex OR\n" +
+            "    LOWER(up.city_name) REGEXP :searchRegex OR\n" +
+            "    LOWER(up.state_name) REGEXP :searchRegex OR\n" +
             "    EXISTS (\n" +
             "        SELECT 1 FROM skills sk_inner\n" +
             "        WHERE FIND_IN_SET(sk_inner.skill_id, up.skill_ids)\n" +

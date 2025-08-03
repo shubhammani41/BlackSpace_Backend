@@ -37,12 +37,6 @@ public interface UserDetailsProj {
 
     String getIndustryName();
 
-    Integer getCountryId();
-
-    Integer getStateId();
-
-    Integer getCityId();
-
     Integer getPositionId();
 
     Integer getIndustryId();
