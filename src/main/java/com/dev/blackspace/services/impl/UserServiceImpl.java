@@ -24,6 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.client.RestTemplate;
+import com.dev.blackspace.services.impl.CustomUserDetails;
 
 import java.util.*;
 
@@ -180,16 +181,23 @@ public class UserServiceImpl {
     }
 
     public UserProfileEntity saveBasicDetailsByUserLoginId(UserProfileEntity userProfileData){
+        userProfileData.setUserId(null);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String subject = authentication.getName();
-        UserLoginEntity userLoginEntity = this.userLoginRepo.findByPhoneOrEmail(subject);
-        if (Objects.isNull(userLoginEntity) || userLoginEntity.getUserId() == null) {
-            return null;
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof CustomUserDetails) {
+            String subject = ((CustomUserDetails) principal).getUserEmailOrPhone();
+            UserLoginEntity userLoginEntity = this.userLoginRepo.findByPhoneOrEmail(subject);
+            if (Objects.isNull(userLoginEntity) || userLoginEntity.getUserId() == null) {
+                return null;
+            }
+            userProfileRepo.save(userProfileData);
+            userLoginEntity.setUserProfileId(userProfileData.getUserId());
+            userLoginRepo.save(userLoginEntity);
+            return userProfileData;
         }
-        userProfileRepo.save(userProfileData);
-        userLoginEntity.setUserProfileId(userProfileData.getUserId());
-        userLoginRepo.save(userLoginEntity);
-        return userProfileData;
+        else{
+            return new UserProfileEntity();
+        }
     }
 
     public PaginationDTO<List<PostDetailsDTO>> getProfilePublicPostsByUserId(Pageable pageable, Integer userId) {

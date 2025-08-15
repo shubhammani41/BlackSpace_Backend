@@ -43,6 +43,13 @@ public class CustomUserDetails implements org.springframework.security.core.user
         return null;
     }
 
+    public String getUserEmailOrPhone(){
+        if(userLoginData!=null){
+            return userLoginData.getEmail()!=null?userLoginData.getEmail():userLoginData.getPhoneNumber();
+        }
+        return null;
+    }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;
